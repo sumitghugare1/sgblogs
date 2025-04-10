@@ -24,7 +24,7 @@ const AdminDashboard = () => {
     });
     
     // First test if API server is reachable
-    axios.get('http://localhost:5000/api/test')
+    axios.get('https://sgblogs.vercel.app/api/test')
       .then(() => console.log('Server is reachable'))
       .catch(err => setError('Cannot reach API server. Please check if backend is running.'));
     
@@ -44,7 +44,7 @@ const AdminDashboard = () => {
         
         // Test admin auth
         try {
-          await axios.get('http://localhost:5000/api/admin/test', {
+          await axios.get('https://sgblogs.vercel.app/api/admin/test', {
             headers: { 'x-auth-token': token }
           });
           console.log('Admin authentication successful');
@@ -57,7 +57,7 @@ const AdminDashboard = () => {
         
         // Fetch blogs
         try {
-          const blogsResponse = await axios.get('http://localhost:5000/api/blog');
+          const blogsResponse = await axios.get('https://sgblogs.vercel.app/api/blog');
           console.log('Blogs fetched:', blogsResponse.data.length);
           setBlogs(blogsResponse.data);
         } catch (err) {
@@ -67,7 +67,7 @@ const AdminDashboard = () => {
         // Fetch users from the admin API endpoint
         try {
           console.log('Attempting to fetch users with token:', token);
-          const usersResponse = await axios.get('http://localhost:5000/api/admin/users', {
+          const usersResponse = await axios.get('https://sgblogs.vercel.app/api/admin/users', {
             headers: { 'x-auth-token': token }
           });
           setUsers(usersResponse.data);
@@ -102,7 +102,7 @@ const AdminDashboard = () => {
       }
 
       // Proceed with deletion
-      const response = await axios.delete(`http://localhost:5000/api/admin/blogs/${id}`, {
+      const response = await axios.delete(`https://sgblogs.vercel.app/api/admin/blogs/${id}`, {
         headers: { 
           'x-auth-token': token,
           'Content-Type': 'application/json'
@@ -132,7 +132,7 @@ const AdminDashboard = () => {
   const handleDeleteUser = async (id) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`http://localhost:5000/api/admin/users/${id}`, {
+      await axios.delete(`https://sgblogs.vercel.app/api/admin/users/${id}`, {
         headers: { 'x-auth-token': token }
       });
       

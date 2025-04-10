@@ -12,7 +12,7 @@ const CreateBlog = () => {
     e.preventDefault(); 
 
     try {
-      const response = await axios.post('http://localhost:5000/api/blog', {
+      const response = await axios.post('https://sgblogs.vercel.app/api/blog', {
         title,
         date,
         content,

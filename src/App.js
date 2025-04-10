@@ -37,7 +37,7 @@ const App = () => {
     const fetchPosts = async () => {
       try {
         setLoading(true);
-        const response = await axios.get('http://localhost:5000/api/blog'); 
+        const response = await axios.get('https://sgblogs.vercel.app/api/blog'); 
         setPosts(response.data); 
         setLoading(false);
       } catch (error) {

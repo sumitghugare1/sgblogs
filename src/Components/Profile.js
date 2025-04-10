@@ -19,7 +19,7 @@ const Profile = () => {
     const fetchProfile = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get('http://localhost:5000/api/auth/profile', {
+        const response = await axios.get('https://sgblogs.vercel.app/api/auth/profile', {
           headers: {
             'x-auth-token': token, // Include the token in the header
           },
@@ -53,7 +53,7 @@ const Profile = () => {
     try {
       const token = localStorage.getItem('token');
       const userId = localStorage.getItem('userId');
-      await axios.put(`http://localhost:5000/api/profile/profile/${userId}`, formData, {
+      await axios.put(`https://sgblogs.vercel.app/api/profile/profile/${userId}`, formData, {
         headers: {
           'x-auth-token': token,
         },

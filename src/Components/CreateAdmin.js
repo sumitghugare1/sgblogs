@@ -13,7 +13,7 @@ const CreateAdmin = () => {
     e.preventDefault();
     try {
       setLoading(true);
-      const response = await axios.post('http://localhost:5000/api/auth/create-admin', {
+      const response = await axios.post('https://sgblogs.vercel.app/api/auth/create-admin', {
         username,
         email,
         password

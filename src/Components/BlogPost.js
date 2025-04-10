@@ -29,7 +29,7 @@ const BlogPost = () => {
     const fetchPost = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`http://localhost:5000/api/blog/${id}`); 
+        const response = await axios.get(`https://sgblogs.vercel.app/api/blog/${id}`); 
         setPost(response.data);
         
         // Initialize with random like count for demo purposes
@@ -56,7 +56,7 @@ const BlogPost = () => {
 
     const fetchRelatedPosts = async (currentPost) => {
       try {
-        const response = await axios.get('http://localhost:5000/api/blog');
+        const response = await axios.get('https://sgblogs.vercel.app/api/blog');
         // Filter out current post and get up to 3 posts
         const filtered = response.data
           .filter(p => p._id !== id)

@@ -66,7 +66,7 @@ const Register = () => {
         
         try {
             setLoading(true);
-            const response = await axios.post('http://localhost:5000/api/auth/register', { username, email, password });
+            const response = await axios.post('https://sgblogs.vercel.app/api/auth/register', { username, email, password });
             setSuccess('Registration successful! Redirecting to login...');
             setError('');
             

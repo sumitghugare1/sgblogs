@@ -17,7 +17,7 @@ const Login = () => {
             setLoading(true);
             setError('');
             
-            const response = await axios.post('http://localhost:5000/api/auth/login', { email, password });
+            const response = await axios.post('https://sgblogs.vercel.app/api/auth/login', { email, password });
             
             // Store token in localStorage
             const token = response.data.token;

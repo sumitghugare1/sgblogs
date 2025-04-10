@@ -17,7 +17,7 @@ const AdminLogin = () => {
             setLoading(true);
             setError('');
             
-            const response = await axios.post('http://localhost:5000/api/auth/admin/login', { email, password });
+            const response = await axios.post('https://sgblogs.vercel.app/api/auth/admin/login', { email, password });
             
             // Store token in localStorage
             const token = response.data.token;
