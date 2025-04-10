@@ -1,68 +1,224 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { AiOutlineMenu, AiOutlineClose } from 'react-icons/ai';
 
 const Navbar = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [showLoginOptions, setShowLoginOptions] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
-  // Check if user is logged in by checking for the token
   useEffect(() => {
     const token = localStorage.getItem('token');
-    setIsLoggedIn(!!token); // Set to true if token exists, otherwise false
+    const adminStatus = localStorage.getItem('isAdmin') === 'true';
+    setIsLoggedIn(!!token);
+    setIsAdmin(adminStatus);
+
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem('token'); // Clear the token from local storage
-    setIsLoggedIn(false); // Update login state
-    navigate('/login'); // Redirect to login page
+    localStorage.removeItem('token');
+    localStorage.removeItem('userId');
+    localStorage.removeItem('isAdmin');
+    setIsLoggedIn(false);
+    setIsAdmin(false);
+    navigate('/login');
+  };
+
+  const closeMenu = () => {
+    setIsOpen(false);
+    setShowLoginOptions(false);
   };
 
   return (
-    <nav className="bg-blue-600 p-4">
-      <div className="container mx-auto flex justify-between items-center">
-        <Link to="/" className="text-white text-lg font-bold">Home</Link>
-        {isLoggedIn ? (
-          <button onClick={handleLogout} className="bg-red-500 text-white px-4 py-2 rounded">
-            Logout
-          </button>
-        ) : (
-          <Link to="/login" className="bg-green-500 text-white px-4 py-2 rounded">
-            Login
-          </Link>
-        )}
+    <nav className={`fixed w-full z-50 transition-all duration-300 ${
+      scrolled ? 'bg-white shadow-lg text-gray-800' : 'bg-transparent text-white'
+    }`}>
+      <div className="container mx-auto px-4 md:px-6 py-4 flex justify-between items-center">
+        {/* Logo */}
+        <Link to="/" className="flex items-center space-x-2">
+          <div className={`rounded-full overflow-hidden p-2 ${
+            scrolled ? 'bg-blue-600' : 'bg-white'
+          }`}>
+            <span className={`text-xl font-extrabold ${
+              scrolled ? 'text-white' : 'text-blue-600'
+            }`}>SG</span>
+          </div>
+          <span className={`text-2xl font-bold transition duration-300 ${
+            scrolled ? 'text-gray-800' : 'text-white'
+          }`}>Blogs</span>
+        </Link>
+
+        {/* Desktop Menu */}
+        <div className="hidden md:flex items-center space-x-1">
+          <NavLink to="/" active={location.pathname === '/'} scrolled={scrolled}>Home</NavLink>
+          <NavLink to="/about" active={location.pathname === '/about'} scrolled={scrolled}>About</NavLink>
+          <NavLink to="/blog" active={location.pathname === '/blog'} scrolled={scrolled}>Blog</NavLink>
+          <NavLink to="/contact" active={location.pathname === '/contact'} scrolled={scrolled}>Contact</NavLink>
+          
+          {isLoggedIn && !isAdmin && (
+            <NavLink to="/create-blog" active={location.pathname === '/create-blog'} scrolled={scrolled}>
+              Create Blog
+            </NavLink>
+          )}
+          {isAdmin && (
+            <NavLink to="/admin/dashboard" active={location.pathname === '/admin/dashboard'} scrolled={scrolled}>
+              Dashboard
+            </NavLink>
+          )}
+          {isLoggedIn && (
+            <NavLink to="/profile" active={location.pathname === '/profile'} scrolled={scrolled}>
+              Profile
+            </NavLink>
+          )}
+          
+          {isLoggedIn ? (
+            <button
+              onClick={handleLogout}
+              className={`px-4 py-2 rounded-full transition duration-300 ${
+                scrolled 
+                  ? 'bg-red-500 hover:bg-red-600 text-white' 
+                  : 'bg-red-500 bg-opacity-90 hover:bg-opacity-100 text-white'
+              }`}>
+              Logout
+            </button>
+          ) : (
+            <div className="relative">
+              <button 
+                onClick={() => setShowLoginOptions(!showLoginOptions)}
+                className={`px-4 py-2 rounded-full transition duration-300 ${
+                  scrolled 
+                    ? 'bg-blue-600 hover:bg-blue-700 text-white' 
+                    : 'bg-white bg-opacity-90 hover:bg-opacity-100 text-blue-600'
+                }`}
+              >
+                Login
+              </button>
+              
+              {showLoginOptions && (
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl py-2 z-50 animate-fadeIn">
+                  <Link 
+                    to="/login" 
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 transition duration-300"
+                    onClick={() => setShowLoginOptions(false)}
+                  >
+                    Login as User
+                  </Link>
+                  <Link 
+                    to="/admin/login" 
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 transition duration-300"
+                    onClick={() => setShowLoginOptions(false)}
+                  >
+                    Login as Admin
+                  </Link>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Mobile Menu Button */}
+        <button 
+          onClick={() => setIsOpen(!isOpen)} 
+          className={`md:hidden focus:outline-none transition-colors ${
+            scrolled ? 'text-gray-800' : 'text-white'
+          }`}
+        >
+          {isOpen 
+            ? <AiOutlineClose className="w-7 h-7" /> 
+            : <AiOutlineMenu className="w-7 h-7" />}
+        </button>
       </div>
 
-      <div className="container mx-auto flex items-center justify-between">
-        <Link to="/" className="text-white text-2xl font-bold">
-          SG Blogs
-        </Link>
-        <div className="hidden md:flex space-x-6">
-          <Link to="/" className="text-white hover:text-gray-300">Home</Link>
-          <Link to="/about" className="text-white hover:text-gray-300">About</Link>
-          <Link to="/blog" className="text-white hover:text-gray-300">Blog</Link>
-          <Link to="/contact" className="text-white hover:text-gray-300">Contact</Link>
-          <Link to="/create-blog" className="text-white hover:text-gray-300">Create Blog</Link>
-        </div>
-        <div className="md:hidden">
-          <button onClick={() => setIsOpen(!isOpen)} className="text-white focus:outline-none">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={isOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16m-7 6h7"}></path>
-            </svg>
-          </button>
-        </div>
-      </div>
+      {/* Mobile Menu */}
       {isOpen && (
-        <div className="md:hidden">
-          <Link to="/" className="block text-white hover:bg-blue-500 px-4 py-2">Home</Link>
-          <Link to="/about" className="block text-white hover:bg-blue-500 px-4 py-2">About</Link>
-          <Link to="/blog" className="block text-white hover:bg-blue-500 px-4 py-2">Blog</Link>
-          <Link to="/contact" className="block text-white hover:bg-blue-500 px-4 py-2">Contact</Link>
-          <Link to="/create-blog" className="block text-white hover:bg-blue-500 px-4 py-2">Create Blog</Link>
+        <div className="md:hidden absolute w-full bg-white shadow-xl rounded-b-lg overflow-hidden animate-slideDown">
+          <MobileNavLink to="/" onClick={closeMenu}>Home</MobileNavLink>
+          <MobileNavLink to="/about" onClick={closeMenu}>About</MobileNavLink>
+          <MobileNavLink to="/blog" onClick={closeMenu}>Blog</MobileNavLink>
+          <MobileNavLink to="/contact" onClick={closeMenu}>Contact</MobileNavLink>
+          
+          {isLoggedIn && !isAdmin && (
+            <MobileNavLink to="/create-blog" onClick={closeMenu}>Create Blog</MobileNavLink>
+          )}
+          {isAdmin && (
+            <MobileNavLink to="/admin/dashboard" onClick={closeMenu}>Admin Dashboard</MobileNavLink>
+          )}
+          {isLoggedIn && (
+            <MobileNavLink to="/profile" onClick={closeMenu}>Profile</MobileNavLink>
+          )}
+          
+          {isLoggedIn ? (
+            <div className="px-4 py-3">
+              <button 
+                onClick={() => {
+                  handleLogout();
+                  closeMenu();
+                }} 
+                className="w-full py-3 bg-red-500 text-white rounded-lg text-center font-medium hover:bg-red-600 transition duration-300"
+              >
+                Logout
+              </button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-2 p-4">
+              <Link 
+                to="/login" 
+                className="py-3 bg-blue-600 text-white rounded-lg text-center font-medium hover:bg-blue-700 transition duration-300"
+                onClick={closeMenu}
+              >
+                Login as User
+              </Link>
+              <Link 
+                to="/admin/login" 
+                className="py-3 bg-purple-600 text-white rounded-lg text-center font-medium hover:bg-purple-700 transition duration-300"
+                onClick={closeMenu}
+              >
+                Login as Admin
+              </Link>
+            </div>
+          )}
         </div>
       )}
     </nav>
   );
 };
+
+// Helper Components for cleaner code
+const NavLink = ({ to, children, active, scrolled }) => (
+  <Link
+    to={to}
+    className={`px-4 py-2 rounded-full transition duration-300 font-medium ${
+      active 
+        ? scrolled 
+          ? 'bg-blue-100 text-blue-700' 
+          : 'bg-white bg-opacity-20 text-white'
+        : scrolled
+          ? 'text-gray-700 hover:bg-gray-100'
+          : 'text-white hover:bg-white hover:bg-opacity-20'
+    }`}
+  >
+    {children}
+  </Link>
+);
+
+const MobileNavLink = ({ to, children, onClick }) => (
+  <Link
+    to={to}
+    className="block px-4 py-3 text-gray-800 border-b border-gray-100 hover:bg-gray-50 transition duration-300"
+    onClick={onClick}
+  >
+    {children}
+  </Link>
+);
 
 export default Navbar;

@@ -20,7 +20,7 @@ const CreateBlog = () => {
         imageUrl,
       });
       console.log(response.data);
-      // Optionally redirect or clear the form
+      
     } catch (error) {
       console.error('Error creating blog post:', error);
     }
